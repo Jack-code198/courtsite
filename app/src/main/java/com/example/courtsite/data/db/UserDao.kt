@@ -1,0 +1,44 @@
+package com.example.courtsite.data.db
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.example.courtsite.data.model.User
+
+@Dao
+interface UserDao {
+
+    // Insert or update user
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUser(user: User)
+
+    // Login: Find user by email or phone and match password
+    @Query("""
+        SELECT * FROM users 
+        WHERE (email = :identifier OR phone = :identifier) 
+        AND password = :password 
+        LIMIT 1
+    """)
+    suspend fun findUser(identifier: String, password: String): User?
+
+    // Find user by email or phone (for registration or profile fetch)
+    @Query("""
+        SELECT * FROM users 
+        WHERE (email = :identifier OR phone = :identifier) 
+        LIMIT 1
+    """)
+    suspend fun findUserByIdentifier(identifier: String): User?
+
+    // Update profile picture for a specific user
+    @Query("""
+        UPDATE users 
+        SET profile_picture = :profilePic 
+        WHERE email = :identifier OR phone = :identifier
+    """)
+    suspend fun updateProfilePicture(identifier: String, profilePic: String)
+
+    // Optional: Fetch all users (useful for admin/debug purposes)
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
+}
