@@ -37,7 +37,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // Determine start destination based on login state
-        val startDestination = if (sessionManager.isLoggedIn()) {
+        val isLoggedIn = sessionManager.isLoggedIn()
+        val loggedInUser = sessionManager.getLoggedInUser()
+        println("MainActivity: isLoggedIn = $isLoggedIn, loggedInUser = $loggedInUser")
+        
+        val startDestination = if (isLoggedIn) {
             "tabs"
         } else {
             "onboarding"
@@ -75,8 +79,10 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onLoginSuccess = { identifier ->
                                     // Save login state AND user identifier
+                                    println("MainActivity: Login successful for user: $identifier")
                                     sessionManager.saveLoggedInUser(identifier)
                                     sessionManager.saveLoginState(true)
+                                    println("MainActivity: Saved login state, navigating to tabs")
                                     navController.navigate("tabs") {
                                         popUpTo("login") { inclusive = true }
                                     }
@@ -110,8 +116,10 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onSignUpSuccess = { identifier ->
                                     // Save login state AND user identifier
+                                    println("MainActivity: Signup successful for user: $identifier")
                                     sessionManager.saveLoggedInUser(identifier)
                                     sessionManager.saveLoginState(true)
+                                    println("MainActivity: Saved signup state, navigating to tabs")
                                     navController.navigate("tabs") {
                                         popUpTo("signup") { inclusive = true }
                                     }

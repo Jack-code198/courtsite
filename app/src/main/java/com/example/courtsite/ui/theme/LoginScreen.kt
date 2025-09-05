@@ -128,7 +128,8 @@ fun LoginScreen(
                         Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
                         onLoginSuccess(identifier)
                     } else {
-                        Toast.makeText(context, "User does not exist. Please sign up!", Toast.LENGTH_SHORT).show()
+                        errorMessage = "Invalid credentials. Please check your email/phone and password."
+                        Toast.makeText(context, "Invalid credentials. Please check your email/phone and password.", Toast.LENGTH_SHORT).show()
                     }
                 }
             },

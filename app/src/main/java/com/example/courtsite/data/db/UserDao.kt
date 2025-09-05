@@ -41,4 +41,8 @@ interface UserDao {
     // Optional: Fetch all users (useful for admin/debug purposes)
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<User>
+
+    // Clear all users (useful for testing/debugging)
+    @Query("DELETE FROM users")
+    suspend fun clearAllUsers()
 }

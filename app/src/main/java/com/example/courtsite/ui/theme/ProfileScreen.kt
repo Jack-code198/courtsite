@@ -112,6 +112,8 @@ fun ProfileScreen(navController: NavController? = null) {
 
         if (!isLoggedIn) {
             isLoading = false
+            user = null
+            errorMessage = null
             Log.d("ProfileScreen", "User is not logged in, skipping data fetch")
             return@LaunchedEffect
         }
@@ -122,6 +124,7 @@ fun ProfileScreen(navController: NavController? = null) {
         if (userIdentifier.isNullOrBlank()) {
             errorMessage = "No user logged in. Please login first."
             isLoading = false
+            user = null
             Log.e("ProfileScreen", "User identifier is null or blank")
             return@LaunchedEffect
         }
@@ -239,6 +242,8 @@ fun ProfileScreen(navController: NavController? = null) {
                             // Retry loading
                             isLoading = true
                             errorMessage = null
+                            // Trigger LaunchedEffect to refetch data
+                            user = null
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF4E28CC)
@@ -256,6 +261,10 @@ fun ProfileScreen(navController: NavController? = null) {
                 onLogout = {
                     Log.d("ProfileScreen", "Logging out user")
                     sessionManager.logout()
+                    // Clear local state
+                    user = null
+                    errorMessage = null
+                    isLoading = false
                     // Navigate back to login screen
                     navController?.navigate("login") {
                         // Clear the entire back stack including tabs
@@ -293,6 +302,9 @@ fun ProfileScreen(navController: NavController? = null) {
                         onClick = {
                             // Retry loading
                             isLoading = true
+                            errorMessage = null
+                            // Trigger LaunchedEffect to refetch data
+                            user = null
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF4E28CC)
