@@ -1,15 +1,65 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle files
+.gradle/
+build/
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration file (sdk path, etc)
 local.properties
+
+# Log/OS Files
+*.log
+
+# Android Studio generated files and folders
+captures/
+.externalNativeBuild/
+.cxx/
+*.aab
+*.apk
+output-metadata.json
+
+# IntelliJ IDEA / Android Studio
+*.iml
+.idea/
+.idea//workspace.xml
+.idea//tasks.xml
+.idea//gradle.xml
+.idea//assetWizardSettings.xml
+.idea//dictionaries
+.idea//libraries
+.idea//modules.xml
+.idea//misc.xml
+.idea//deploymentTargetDropDown.xml
+.idea//render.experimental.xml
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+app/google-services.json.debug
+
+# Android Profiling
+*.hprof
+
+# debug file firebase
+app/google-services.json.debug
+
+# key for firebase service
+*.json
+!google-services.json  # config project
+
+# Firebase crashlytics / analytics
+app/src//google-services.json
+
+# Kotlin build cache
+.kotlinc/
+
+# Misc
+*.lock
+*.bin
+
+# OS / Editor specific
+.DS_Store
+Thumbs.db
