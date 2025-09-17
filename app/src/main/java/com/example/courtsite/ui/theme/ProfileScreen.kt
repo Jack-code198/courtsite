@@ -46,6 +46,8 @@ import androidx.navigation.compose.composable
 import coil.compose.rememberAsyncImagePainter
 // import coil.request.ImageRequest // Marked as unused
 import com.example.courtsite.R // Ensure R class is imported
+import com.example.courtsite.data.session.SessionManager
+import com.example.courtsite.data.db.DatabaseProvider
 import com.example.courtsite.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -61,6 +63,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun ProfileScreen(navController: NavController? = null) {
     val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
     val scope = rememberCoroutineScope()
 
     var user by remember { mutableStateOf<User?>(null) }

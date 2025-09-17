@@ -13,11 +13,17 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.courtsite.data.db.DatabaseProvider
+import com.example.courtsite.data.model.User
 import com.example.courtsite.ui.theme.BookingResultsScreen
 import com.example.courtsite.ui.theme.LoginScreen
 import com.example.courtsite.ui.theme.SignUpScreen
 import com.example.courtsite.ui.theme.MainTabs
 import com.example.courtsite.ui.theme.OnboardingScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -56,17 +62,35 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("login") {
+                            val db = DatabaseProvider.getDatabase(this@MainActivity)
+                            val userDao = db.userDao()
+
                             LoginScreen(
                                 onSignUpClick = { navController.navigate("signup") },
                                 userExistsCheck = { _, _ -> false },
+                                onLoginSuccess = { identifier ->
+                                    navController.navigate("tabs") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                },
                                 onForgotPasswordClick = { navController.navigate("forgotPassword") }
                             )
                         }
 
                         composable("signup") {
+                            val db = DatabaseProvider.getDatabase(this@MainActivity)
+                            val userDao = db.userDao()
+
                             SignUpScreen(
+                                onSignUpClick = { _, _, _ -> },
+                                userExistsCheck = { _ -> false },
                                 onLoginClick = {
                                     navController.popBackStack("login", inclusive = false)
+                                },
+                                onSignUpSuccess = { identifier ->
+                                    navController.navigate("tabs") {
+                                        popUpTo("signup") { inclusive = true }
+                                    }
                                 }
                             )
                         }
