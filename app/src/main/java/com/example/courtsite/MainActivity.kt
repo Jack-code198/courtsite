@@ -13,35 +13,24 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.courtsite.data.db.DatabaseProvider
-import com.example.courtsite.data.model.User
-import com.example.courtsite.data.session.SessionManager
+import com.example.courtsite.ui.theme.BookingResultsScreen
 import com.example.courtsite.ui.theme.LoginScreen
 import com.example.courtsite.ui.theme.SignUpScreen
 import com.example.courtsite.ui.theme.MainTabs
 import com.example.courtsite.ui.theme.OnboardingScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
-    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sessionManager = SessionManager(this)
-
         installSplashScreen()
         enableEdgeToEdge()
 
-        // Determine start destination based on login state
-        val isLoggedIn = sessionManager.isLoggedIn()
-        val loggedInUser = sessionManager.getLoggedInUser()
-        println("MainActivity: isLoggedIn = $isLoggedIn, loggedInUser = $loggedInUser")
-        
-        val startDestination = if (isLoggedIn) {
+        // Determine start destination based on Firebase login state
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val startDestination = if (firebaseUser != null) {
             "tabs"
         } else {
             "onboarding"
@@ -67,69 +56,48 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("login") {
-                            val db = DatabaseProvider.getDatabase(this@MainActivity)
-                            val userDao = db.userDao()
-
                             LoginScreen(
                                 onSignUpClick = { navController.navigate("signup") },
-                                userExistsCheck = { identifier, password ->
-                                    runBlocking {
-                                        userDao.findUser(identifier, password) != null
-                                    }
-                                },
-                                onLoginSuccess = { identifier ->
-                                    // Save login state AND user identifier
-                                    println("MainActivity: Login successful for user: $identifier")
-                                    sessionManager.saveLoggedInUser(identifier)
-                                    sessionManager.saveLoginState(true)
-                                    println("MainActivity: Saved login state, navigating to tabs")
-                                    navController.navigate("tabs") {
-                                        popUpTo("login") { inclusive = true }
-                                    }
-                                }
+                                userExistsCheck = { _, _ -> false },
+                                onForgotPasswordClick = { navController.navigate("forgotPassword") }
                             )
                         }
 
                         composable("signup") {
-                            val db = DatabaseProvider.getDatabase(this@MainActivity)
-                            val userDao = db.userDao()
-
                             SignUpScreen(
-                                onSignUpClick = { emailOrPhone, password, _ ->
-                                    val user = if (emailOrPhone.contains("@")) {
-                                        User(email = emailOrPhone, phone = null, password = password)
-                                    } else {
-                                        User(email = null, phone = emailOrPhone, password = password)
-                                    }
-
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        userDao.insertUser(user)
-                                    }
-                                },
-                                userExistsCheck = { identifier ->
-                                    runBlocking {
-                                        userDao.findUserByIdentifier(identifier) != null
-                                    }
-                                },
                                 onLoginClick = {
                                     navController.popBackStack("login", inclusive = false)
-                                },
-                                onSignUpSuccess = { identifier ->
-                                    // Save login state AND user identifier
-                                    println("MainActivity: Signup successful for user: $identifier")
-                                    sessionManager.saveLoggedInUser(identifier)
-                                    sessionManager.saveLoginState(true)
-                                    println("MainActivity: Saved signup state, navigating to tabs")
-                                    navController.navigate("tabs") {
-                                        popUpTo("signup") { inclusive = true }
-                                    }
                                 }
+                            )
+                        }
+
+                        composable("bookingResults/{location}/{sport}") { backStackEntry ->
+                            val location = backStackEntry.arguments?.getString("location") ?: ""
+                            val sport = backStackEntry.arguments?.getString("sport") ?: ""
+                            BookingResultsScreen(
+                                navController = navController,  // Use the main navController here
+                                location = location,
+                                sport = sport
                             )
                         }
 
                         // Centralized tabs under Home
                         composable("tabs") {
                             MainTabs(outerNavController = navController)
+                        }
+
+                        // Forgot password route
+                        composable("forgotPassword") {
+                            com.example.courtsite.ui.theme.ForgotPasswordScreen(navController = navController)
+                        }
+
+                        // Centralized logout route
+                        composable("logout") {
+                            // Firebase sign out and reset navigation to onboarding
+                            FirebaseAuth.getInstance().signOut()
+                            navController.navigate("onboarding") {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     }
                 }

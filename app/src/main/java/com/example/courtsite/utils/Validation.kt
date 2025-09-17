@@ -66,4 +66,18 @@ object Validation {
             else -> null
         }
     }
+
+    // Validate password strength and return specific error text, or null if OK
+    // Rules: min 8 chars, at least 1 uppercase, 1 lowercase, 1 digit, 1 special, no spaces
+    fun getPasswordError(password: String): String? {
+        if (password.isBlank()) return "Password is required"
+        if (password.length < 8) return "Password must be at least 8 characters"
+        if (!password.any { it.isLowerCase() }) return "Add at least one lowercase letter"
+        if (!password.any { it.isUpperCase() }) return "Add at least one uppercase letter"
+        if (!password.any { it.isDigit() }) return "Add at least one number"
+        val special = "!@#\$%^&*()_+-={}|[]\\:\";'<>?,./`~"
+        if (!password.any { it in special }) return "Add at least one special character"
+        if (password.any { it.isWhitespace() }) return "Password cannot contain spaces"
+        return null
+    }
 }

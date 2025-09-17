@@ -1,6 +1,7 @@
 package com.example.courtsite.ui.theme
 
 import android.widget.Toast
+import com.example.courtsite.utils.Validation
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -23,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.courtsite.R
-import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
@@ -31,7 +32,8 @@ fun LoginScreen(
     onGoogleLogin: () -> Unit = {},
     onFacebookLogin: () -> Unit = {},
     userExistsCheck: (String, String) -> Boolean, // Remove suspend keyword
-    onLoginSuccess: (String) -> Unit = {}
+    onLoginSuccess: (String) -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {}
 ) {
     var identifier by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -66,7 +68,7 @@ fun LoginScreen(
         )
 
         Text(
-            text = "Enter your email or phone and password.",
+            text = "Enter your email and password.",
             color = Color(0xFF4E28CC),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
@@ -77,7 +79,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = identifier,
             onValueChange = { identifier = it },
-            label = { Text("Email / Phone") },
+            label = { Text("Email") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -107,6 +109,15 @@ fun LoginScreen(
                 .padding(vertical = 8.dp)
         )
 
+        Text(
+            text = "Forgot password?",
+            color = Color(0xFF4E28CC),
+            fontSize = 13.sp,
+            modifier = Modifier
+                .align(Alignment.End)
+                .clickable { onForgotPasswordClick() }
+        )
+
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -118,18 +129,30 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                if (identifier.isBlank() || password.isBlank()) {
-                    errorMessage = "All fields are required"
-                } else {
-                    errorMessage = ""
-                    // Call the function directly (no coroutine needed)
-                    val exists = userExistsCheck(identifier, password)
-                    if (exists) {
-                        Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
-                        onLoginSuccess(identifier)
-                    } else {
-                        errorMessage = "Invalid credentials. Please check your email/phone and password."
-                        Toast.makeText(context, "Invalid credentials. Please check your email/phone and password.", Toast.LENGTH_SHORT).show()
+                // First validate email/phone format
+                val inputError = Validation.getInputError(identifier)
+                when {
+                    inputError != null -> {
+                        errorMessage = inputError
+                    }
+                    password.isBlank() -> {
+                        errorMessage = "Password is required"
+                    }
+                    else -> {
+                        errorMessage = ""
+                        val auth = FirebaseAuth.getInstance()
+                        auth.signInWithEmailAndPassword(identifier, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
+                                    onLoginSuccess(identifier)
+                                } else {
+                                    val msg = task.exception?.localizedMessage
+                                        ?: "Invalid credentials"
+                                    errorMessage = msg
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                }
+                            }
                     }
                 }
             },
@@ -218,5 +241,3 @@ fun PreviewLoginScreen() {
         userExistsCheck = { _, _ -> false }
     )
 }
-
-

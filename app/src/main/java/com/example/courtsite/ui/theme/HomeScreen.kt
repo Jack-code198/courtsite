@@ -61,21 +61,26 @@ fun MainTabs(outerNavController: NavController? = null) {
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(
-                currentRoute = currentRoute,
-                onLogout = { /* Optional: delegate to outerNavController if needed */ },
-                onNavigate = { route ->
-                    if (route != currentRoute) {
-                        tabsNavController.navigate(route) {
-                            popUpTo(tabsNavController.graph.startDestinationId) {
-                                saveState = true
+            if (currentRoute != "settings") {
+                BottomNavigationBar(
+                    currentRoute = currentRoute,
+                    onLogout = { /* Optional: delegate to outerNavController if needed */ },
+                    onNavigate = { route ->
+                        if (route != currentRoute) {
+                            tabsNavController.navigate(route) {
+                                // Clear back stack to avoid building up navigation history
+                                popUpTo(tabsNavController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination
+                                launchSingleTop = true
+                                // Restore state when re-selecting a previously selected item
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding ->
         NavHost(
@@ -87,16 +92,54 @@ fun MainTabs(outerNavController: NavController? = null) {
                 HomeScreenContent(navController = tabsNavController)
             }
             composable("explore") {
-                ExploreScreen(navController = tabsNavController)
+                ExploreScreen(navController = tabsNavController) // This should work now
             }
             composable("book") {
                 BookScreen(navController = tabsNavController)
+            }
+            // Allow preselected sport from Explore: book/{sport}
+            composable("book/{sport}") { backStackEntry ->
+                val sportArg = backStackEntry.arguments?.getString("sport")
+                BookScreen(navController = tabsNavController, preselectedSport = sportArg)
             }
             composable("upcoming") {
                 UpcomingScreen(navController = tabsNavController)
             }
             composable("profile") {
                 ProfileScreen(navController = tabsNavController)
+            }
+            // Edit profile route within tabs
+            composable("editProfile") {
+                EditProfileScreen(navController = tabsNavController)
+            }
+            // Settings route within tabs
+            composable("settings") {
+                SettingScreen(navController = tabsNavController)
+            }
+            // Create Password route within tabs
+            composable("createPassword") {
+                CreatePasswordScreen(navController = tabsNavController)
+            }
+            // ADD THE BOOKING RESULTS ROUTE HERE
+            composable("bookingResults/{location}/{sport}") { backStackEntry ->
+                val location = backStackEntry.arguments?.getString("location") ?: ""
+                val sport = backStackEntry.arguments?.getString("sport") ?: ""
+                BookingResultsScreen(
+                    navController = tabsNavController,
+                    location = location,
+                    sport = sport
+                )
+            }
+            // Venue Details route
+            composable("venueDetails/{venueName}") { backStackEntry ->
+                val venueName = backStackEntry.arguments?.getString("venueName") ?: ""
+                VenueDetailsScreen(navController = tabsNavController, venueName = venueName)
+            }
+            // Delegate logout route inside tabs to root nav controller
+            composable("logout") {
+                outerNavController?.navigate("logout") {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         }
     }
@@ -198,7 +241,7 @@ fun HeaderSection(navController: NavController? = null) {
             }
         }
 
-        // Search bar
+        // Search bar - MODIFIED TO NAVIGATE TO BOOK SCREEN
         Box(
             modifier = Modifier
                 .offset(y = (-25).dp)
@@ -211,7 +254,16 @@ fun HeaderSection(navController: NavController? = null) {
                     color = Color.Black.copy(alpha = 0.3f),
                     shape = RoundedCornerShape(12.dp)
                 )
-                .clickable { showSearchModal = true }
+                .clickable {
+                    // Navigate directly to BookScreen when search bar is clicked
+                    navController?.navigate("book") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
         ) {
             Row(
                 modifier = Modifier
@@ -227,7 +279,7 @@ fun HeaderSection(navController: NavController? = null) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (searchText.isEmpty()) "Search Place, Location or Sport" else searchText,
+                    text = "Search Place, Location or Sport",
                     color = Color.Gray,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
@@ -245,7 +297,7 @@ fun HeaderSection(navController: NavController? = null) {
                 .padding(horizontal = 16.dp)
         ) {
             SquareButton(
-                iconRes = R.drawable.book, 
+                iconRes = R.drawable.book,
                 label = "Book",
                 onClick = {
                     navController?.navigate("book") {
@@ -269,6 +321,78 @@ fun HeaderSection(navController: NavController? = null) {
             onDismissRequest = { showSearchModal = false },
             sheetState = sheetState
         ) {
+            // Group locations by first letter for alphabetical organization
+            val locations = listOf(
+                "Ampang, Selangor",
+                "Ara Damansara, Selangor",
+                "Balakong, Selangor",
+                "Bandar Baru Bangi, Selangor",
+                "Bandar Utama, Selangor",
+                "Batang Kali, Selangor",
+                "Batu Caves, Selangor",
+                "Bukit Beruntung, Selangor",
+                "Cyberjaya, Selangor",
+                "Dengkil, Selangor",
+                "Kajang, Selangor",
+                "Kapar, Selangor",
+                "Klang, Selangor",
+                "Kota Damansara, Selangor",
+                "North Puchong, Selangor",
+                "Pelabuhan Klang, Selangor",
+                "Petaling Jaya, Selangor",
+                "Puncak Alam, Selangor",
+                "Rawang, Selangor",
+                "Rimbayu, Selangor",
+                "Semenyih, Selangor",
+                "Serendah, Selangor",
+                "Seri Kembangan, Selangor",
+                "Shah Alam, Selangor",
+                "South Puchong, Selangor",
+                "Subang Jaya, Selangor",
+                "Sungai Buloh, Selangor",
+                "Sungai Long, Selangor",
+                "Telok Panglima Gerang, Selangor",
+                "Cheras, W.P Kuala Lumpur",
+                "Kampung Baru, W.P Kuala Lumpur",
+                "Kepong, W.P Kuala Lumpur",
+                "Kuala Lumpur, W.P Kuala Lumpur",
+                "Kuchai Lama, W.P Kuala Lumpur",
+                "Mont Kiara, W.P Kuala Lumpur",
+                "Pandan Indah, W.P Kuala Lumpur",
+                "Pudu, W.P Kuala Lumpur",
+                "Segambut, W.P Kuala Lumpur",
+                "Sentul, W.P Kuala Lumpur",
+                "Seputeh, W.P Kuala Lumpur",
+                "Setapak, W.P Kuala Lumpur",
+                "Sri Petaling, W.P Kuala Lumpur",
+                "Sungai Besi, W.P Kuala Lumpur",
+                "Batu Pahat, Johor",
+                "Gelang Patah, Johor",
+                "Iskandar Puteri, Johor",
+                "Johor Bahru, Johor",
+                "Kota Tinggi, Johor",
+                "Nusajaya, Selangor",
+                "Skudai, Johor",
+                "Tebrau, Johor",
+                "Bayan Lepas, Penang",
+                "Bukit Mertajam, Penang"
+            )
+
+            // Filter locations based on search text (starts with search text)
+            val filteredLocations = remember(searchText, locations) {
+                if (searchText.isBlank()) {
+                    // If no search text, group all locations by first letter
+                    locations.groupBy { it.first().uppercaseChar() }
+                        .toSortedMap()
+                } else {
+                    // Filter locations that start with the search text (case insensitive)
+                    val filtered = locations
+                        .filter { it.startsWith(searchText, ignoreCase = true) }
+                        .groupBy { it.first().uppercaseChar() }
+                    filtered.toSortedMap()
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -298,8 +422,14 @@ fun HeaderSection(navController: NavController? = null) {
                     value = searchText,
                     onValueChange = { searchText = it },
                     placeholder = { Text("Search venue name, city, or state") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(
+                        textAlign = TextAlign.Start
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -310,7 +440,7 @@ fun HeaderSection(navController: NavController? = null) {
                 // Combined scrollable area for both Venues and Locations
                 Box(
                     modifier = Modifier
-                        .height(350.dp) // Increased height to accommodate both sections
+                        .height(350.dp)
                         .fillMaxWidth()
                 ) {
                     val scrollState = rememberLazyListState()
@@ -338,7 +468,11 @@ fun HeaderSection(navController: NavController? = null) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
+                                    .padding(vertical = 8.dp)
+                                    .clickable {
+                                        searchText = venue
+                                        showSearchModal = false
+                                    },
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -365,78 +499,51 @@ fun HeaderSection(navController: NavController? = null) {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        // Location list with location icon
-                        items(
-                            listOf(
-                                "Ampang, Selangor",
-                                "Ara Damansara, Selangor",
-                                "Balakong, Selangor",
-                                "Bandar Baru Bangi, Selangor",
-                                "Bandar Utama, Selangor",
-                                "Batang Kali, Selangor",
-                                "Batu Caves, Selangor",
-                                "Bukit Beruntung, Selangor",
-                                "Cyberjaya, Selangor",
-                                "Dengkil, Selangor",
-                                "Kajang, Selangor",
-                                "Kapar, Selangor",
-                                "Klang, Selangor",
-                                "Kota Damansara, Selangor",
-                                "North Puchong, Selangor",
-                                "Pelabuhan Klang, Selangor",
-                                "Petaling Jaya, Selangor",
-                                "Puncak Alam, Selangor",
-                                "Rawang, Selangor",
-                                "Rimbayu, Selangor",
-                                "Semenyih, Selangor",
-                                "Serendah, Selangor",
-                                "Seri Kembangan, Selangor",
-                                "Shah Alam, Selangor",
-                                "South Puchong, Selangor",
-                                "Subang Jaya, Selangor",
-                                "Sungai Buloh, Selangor",
-                                "Sungai Long, Selangor",
-                                "Telok Panglima Gerang, Selangor",
-                                "Cheras, W.P Kuala Lumpur",
-                                "Kampung Baru, W.P Kuala Lumpur",
-                                "Kepong, W.P Kuala Lumpur",
-                                "Kuala Lumpur, W.P Kuala Lumpur",
-                                "Kuchai Lama, W.P Kuala Lumpur",
-                                "Mont Kiara, W.P Kuala Lumpur",
-                                "Pandan Indah, W.P Kuala Lumpur",
-                                "Pudu, W.P Kuala Lumpur",
-                                "Segambut, W.P Kuala Lumpur",
-                                "Sentul, W.P Kuala Lumpur",
-                                "Seputeh, W.P Kuala Lumpur",
-                                "Setapak, W.P Kuala Lumpur",
-                                "Sri Petaling, W.P Kuala Lumpur",
-                                "Sungai Besi, W.P Kuala Lumpur",
-                                "Batu Pahat, Johor",
-                                "Gelang Patah, Johor",
-                                "Iskandar Puteri, Johor",
-                                "Johor Bahru, Johor",
-                                "Kota Tinggi, Johor",
-                                "Nusajaya, Selangor",
-                                "Skudai, Johor",
-                                "Tebrau, Johor",
-                                "Bayan Lepas, Penang",
-                                "Bukit Mertajam, Penang"
-                            )
-                        ) { location ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.location),
-                                    contentDescription = null,
-                                    tint = Color.Unspecified,
-                                    modifier = Modifier.size(20.dp)
+                        // Alphabetically organized location list
+                        if (filteredLocations.isEmpty()) {
+                            item {
+                                Text(
+                                    text = "No locations found",
+                                    color = Color.Gray,
+                                    modifier = Modifier.padding(vertical = 16.dp)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = location)
+                            }
+                        } else {
+                            filteredLocations.forEach { (initial, locationsList) ->
+                                // Only show section header if we have multiple letters in search results
+                                if (filteredLocations.size > 1) {
+                                    item(key = "header_$initial") {
+                                        Text(
+                                            text = initial.toString(),
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(vertical = 8.dp)
+                                        )
+                                    }
+                                }
+
+                                // Locations for this letter
+                                items(locationsList) { location ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp)
+                                            .clickable {
+                                                searchText = location
+                                                showSearchModal = false
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.location),
+                                            contentDescription = null,
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(text = location)
+                                    }
+                                }
                             }
                         }
                     }

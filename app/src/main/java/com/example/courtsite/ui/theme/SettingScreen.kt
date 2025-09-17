@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.courtsite.data.session.SessionManager
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -88,7 +88,7 @@ fun BottomNavigationBar(navController: NavController) {
 fun SettingScreen(navController: NavController) {
     var selectedLanguage by remember { mutableStateOf("EN") }
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
+    var showLogoutConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -176,7 +176,7 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable { navController.navigate("createPassword") }
             )
 
             // Join More Games
@@ -429,12 +429,30 @@ fun SettingScreen(navController: NavController) {
                     )
                 },
                 modifier = Modifier.clickable {
-                    sessionManager.clearSession()
-                    navController.navigate("onboarding") {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    showLogoutConfirm = true
                 }
             )
+
+            if (showLogoutConfirm) {
+                AlertDialog(
+                    onDismissRequest = { showLogoutConfirm = false },
+                    title = { Text("Confirm Logout") },
+                    text = { Text("Are you sure you want to log out?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showLogoutConfirm = false
+                            navController.navigate("logout")
+                        }) {
+                            Text("Log out")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showLogoutConfirm = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
 
             // Add some padding at the bottom
             Spacer(modifier = Modifier.height(32.dp))

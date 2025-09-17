@@ -1,6 +1,7 @@
 package com.example.courtsite.ui.theme
 
 import androidx.compose.foundation.Image
+import com.example.courtsite.utils.Validation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.courtsite.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
 
 
 @Composable
@@ -76,7 +80,7 @@ fun SignUpScreen(
             )
 
             Text(
-                text = "Create your account using email or phone number.",
+                text = "Create your account using email.",
                 color = Color(0xFF4E28CC),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
@@ -86,7 +90,7 @@ fun SignUpScreen(
             OutlinedTextField(
                 value = emailOrPhone,
                 onValueChange = { emailOrPhone = it },
-                label = { Text("Email/Phone number") },
+                label = { Text("Email") },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -113,6 +117,13 @@ fun SignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
+            )
+
+            Text(
+                text = "At least 8 characters, include uppercase, lowercase, number, special character. No spaces.",
+                color = Color.Gray,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp)
             )
 
             OutlinedTextField(
@@ -148,20 +159,51 @@ fun SignUpScreen(
 
             Button(
                 onClick = {
+                    // First validate email/phone format
+                    val inputError = Validation.getInputError(emailOrPhone)
                     when {
-                        emailOrPhone.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
-                            errorMessage = "All fields are required"
+                        inputError != null -> {
+                            errorMessage = inputError
                         }
-                        userExistsCheck(emailOrPhone) -> { // Direct call, no coroutine
-                            errorMessage = "User already exists. Please login."
+                        Validation.getPasswordError(password) != null -> {
+                            errorMessage = Validation.getPasswordError(password)!!
+                        }
+                        confirmPassword.isBlank() -> {
+                            errorMessage = "Please confirm your password"
                         }
                         password != confirmPassword -> {
                             errorMessage = "Passwords do not match"
                         }
+                        userExistsCheck(emailOrPhone) -> {
+                            errorMessage = "User already exists. Please login."
+                        }
                         else -> {
                             errorMessage = ""
-                            onSignUpClick(emailOrPhone, password, confirmPassword)
-                            onSignUpSuccess(emailOrPhone)
+                            val auth = FirebaseAuth.getInstance()
+                            auth.createUserWithEmailAndPassword(emailOrPhone, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val uid = auth.currentUser?.uid
+                                        if (uid != null) {
+                                            val db = FirebaseFirestore.getInstance()
+                                            val userDoc = hashMapOf(
+                                                "email" to emailOrPhone,
+                                                "name" to null,
+                                                "phone" to null,
+                                                "createdAt" to Timestamp.now(),
+                                                "updatedAt" to Timestamp.now()
+                                            )
+                                            db.collection("users").document(uid).set(userDoc)
+                                                .addOnCompleteListener {
+                                                    onSignUpSuccess(emailOrPhone)
+                                                }
+                                        } else {
+                                            errorMessage = "Signup failed: no uid"
+                                        }
+                                    } else {
+                                        errorMessage = task.exception?.localizedMessage ?: "Signup failed"
+                                    }
+                                }
                         }
                     }
                 },

@@ -9,6 +9,7 @@ data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
+    val name: String? = null,
     val email: String?,
     val phone: String?,
     val password: String,

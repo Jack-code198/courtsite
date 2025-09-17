@@ -24,9 +24,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.courtsite.R
-import com.example.courtsite.data.db.DatabaseProvider
 import com.example.courtsite.data.model.User
-import com.example.courtsite.data.session.SessionManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,7 +36,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun EditProfileScreen(navController: NavController) {
     val context = LocalContext.current
-    val session = remember { SessionManager(context) }
+    val currentUser = FirebaseAuth.getInstance().currentUser
     val scope = rememberCoroutineScope()
 
     var user by remember { mutableStateOf<User?>(null) }
@@ -47,29 +48,56 @@ fun EditProfileScreen(navController: NavController) {
     var profilePic by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        val identifier = session.getLoggedInUser()
-        if (!identifier.isNullOrBlank()) {
-            user = withContext(Dispatchers.IO) {
-                DatabaseProvider.getDatabase(context).userDao().findUserByIdentifier(identifier)
+        if (currentUser == null) return@LaunchedEffect
+        
+        try {
+            val userDoc = withContext(Dispatchers.IO) {
+                FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUser.uid)
+                    .get()
+                    .await()
             }
-            user?.let {
-                email = it.email ?: ""
-                phone = it.phone ?: ""
-                profilePic = it.profilePicture
-                name = (it.email ?: it.phone ?: "User").substringBefore('@')
+            
+            if (userDoc.exists()) {
+                val userData = userDoc.data
+                email = userData?.get("email") as? String ?: currentUser.email ?: ""
+                phone = userData?.get("phone") as? String ?: ""
+                profilePic = userData?.get("profilePicture") as? String
+                name = userData?.get("name") as? String ?: currentUser.displayName ?: email.substringBefore('@')
+            } else {
+                // Use Firebase Auth data
+                email = currentUser.email ?: ""
+                phone = currentUser.phoneNumber ?: ""
+                profilePic = currentUser.photoUrl?.toString()
+                name = currentUser.displayName ?: email.substringBefore('@')
             }
+        } catch (e: Exception) {
+            // Fallback to Firebase Auth data
+            email = currentUser.email ?: ""
+            phone = currentUser.phoneNumber ?: ""
+            profilePic = currentUser.photoUrl?.toString()
+            name = currentUser.displayName ?: email.substringBefore('@')
         }
     }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            profilePic = it.toString()
+        uri?.let { selectedUri ->
+            profilePic = selectedUri.toString()
             scope.launch {
-                session.getLoggedInUser()?.let { id ->
-                    withContext(Dispatchers.IO) {
-                        DatabaseProvider.getDatabase(context).userDao().updateProfilePicture(id, it.toString())
+                if (currentUser != null) {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(currentUser.uid)
+                                .update("profilePicture", selectedUri.toString())
+                                .await()
+                        }
+                    } catch (e: Exception) {
+                        // Handle error if needed
                     }
                 }
             }
@@ -145,11 +173,24 @@ fun EditProfileScreen(navController: NavController) {
                     phoneError = if (phone.isNotBlank() && !Regex("^(?:\\+?60|0)[1-9]\\d{8,9}$").matches(phone)) "Please enter a valid Malaysian phone number" else null
                     if (phoneError != null) return@Button
 
-                    // Save changes to database
+                    // Save changes to Firestore
                     scope.launch {
-                        session.getLoggedInUser()?.let { id ->
-                            withContext(Dispatchers.IO) {
-                                DatabaseProvider.getDatabase(context).userDao().updateContact(id, if (name.isBlank()) null else name, email, if (phone.isBlank()) null else phone)
+                        if (currentUser != null) {
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    val updates = mutableMapOf<String, Any>()
+                                    if (name.isNotBlank()) updates["name"] = name
+                                    updates["email"] = email
+                                    if (phone.isNotBlank()) updates["phone"] = phone
+                                    
+                                    FirebaseFirestore.getInstance()
+                                        .collection("users")
+                                        .document(currentUser.uid)
+                                        .update(updates)
+                                        .await()
+                                }
+                            } catch (e: Exception) {
+                                // Handle error if needed
                             }
                         }
                     }

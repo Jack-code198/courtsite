@@ -38,6 +38,24 @@ interface UserDao {
     """)
     suspend fun updateProfilePicture(identifier: String, profilePic: String)
 
+    // Update contact info (email/phone) for a specific user
+    @Query("""
+        UPDATE users
+        SET name = :newName,
+            email = :newEmail,
+            phone = :newPhone
+        WHERE email = :identifier OR phone = :identifier
+    """)
+    suspend fun updateContact(identifier: String, newName: String?, newEmail: String?, newPhone: String?)
+
+    // Update password for a specific user
+    @Query("""
+        UPDATE users
+        SET password = :newPassword
+        WHERE email = :identifier OR phone = :identifier
+    """)
+    suspend fun updatePassword(identifier: String, newPassword: String)
+
     // Optional: Fetch all users (useful for admin/debug purposes)
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<User>
