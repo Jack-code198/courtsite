@@ -66,6 +66,7 @@ object Validation {
             else -> null
         }
     }
+<<<<<<< HEAD
 
     // Validate password strength and return specific error text, or null if OK
     // Rules: min 8 chars, at least 1 uppercase, 1 lowercase, 1 digit, 1 special, no spaces
@@ -80,4 +81,6 @@ object Validation {
         if (password.any { it.isWhitespace() }) return "Password cannot contain spaces"
         return null
     }
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 }

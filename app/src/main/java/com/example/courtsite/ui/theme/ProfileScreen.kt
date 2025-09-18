@@ -2,8 +2,11 @@ package com.example.courtsite.ui.theme
 
 import android.net.Uri
 import android.os.Bundle
+<<<<<<< HEAD
 import java.text.SimpleDateFormat
 import java.util.*
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 // import android.util.Log // Marked as unused
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -51,9 +54,12 @@ import com.example.courtsite.R // Ensure R class is imported
 import com.example.courtsite.data.session.SessionManager
 import com.example.courtsite.data.db.DatabaseProvider
 import com.example.courtsite.data.model.User
+<<<<<<< HEAD
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -71,27 +77,42 @@ fun ProfileScreen(navController: NavController? = null) {
     var user by remember { mutableStateOf<User?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+<<<<<<< HEAD
     var showLogoutConfirm by remember { mutableStateOf(false) }
 
     val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+=======
+
+    val isLoggedIn = sessionManager.isLoggedIn()
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { selectedUri ->
             scope.launch {
+<<<<<<< HEAD
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 if (currentUser == null) {
+=======
+                val userIdentifier = sessionManager.getLoggedInUser()
+                if (userIdentifier.isNullOrBlank()) {
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                     errorMessage = "No user logged in. Please login first."
                     return@launch
                 }
                 try {
                     withContext(Dispatchers.IO) {
+<<<<<<< HEAD
                         FirebaseFirestore.getInstance()
                             .collection("users")
                             .document(currentUser.uid)
                             .update("profilePicture", selectedUri.toString())
                             .await()
+=======
+                        val db = DatabaseProvider.getDatabase(context)
+                        db.userDao().updateProfilePicture(userIdentifier, selectedUri.toString())
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                     }
                     user = user?.copy(profilePicture = selectedUri.toString())
                     errorMessage = null
@@ -109,14 +130,20 @@ fun ProfileScreen(navController: NavController? = null) {
             errorMessage = null
             return@LaunchedEffect
         }
+<<<<<<< HEAD
         
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
+=======
+        val userIdentifier = sessionManager.getLoggedInUser()
+        if (userIdentifier.isNullOrBlank()) {
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             errorMessage = "No user logged in. Please login first."
             isLoading = false
             user = null
             return@LaunchedEffect
         }
+<<<<<<< HEAD
         
         try {
             val userDoc = withContext(Dispatchers.IO) {
@@ -147,6 +174,15 @@ fun ProfileScreen(navController: NavController? = null) {
                     password = "",
                     profilePicture = currentUser.photoUrl?.toString()
                 )
+=======
+        try {
+            val foundUser = withContext(Dispatchers.IO) {
+                DatabaseProvider.getDatabase(context).userDao().findUserByIdentifier(userIdentifier)
+            }
+            user = foundUser ?: run {
+                errorMessage = "User not found."
+                null
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             }
         } catch (e: Exception) {
             errorMessage = "Error loading user data: ${e.localizedMessage ?: e.message}"
@@ -200,7 +236,13 @@ fun ProfileScreen(navController: NavController? = null) {
                 onProfilePicSelected = { navController?.navigate("editProfile") },
                 onEditContact = { navController?.navigate("editProfile") },
                 onLogout = {
+<<<<<<< HEAD
                     showLogoutConfirm = true
+=======
+                    sessionManager.clearSession()
+                    user = null
+                    navController?.navigate("onboarding") { popUpTo(0) { inclusive = true } }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                 }
             )
             else -> Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
@@ -211,6 +253,7 @@ fun ProfileScreen(navController: NavController? = null) {
                 }
             }
         }
+<<<<<<< HEAD
 
         if (showLogoutConfirm) {
             AlertDialog(
@@ -232,6 +275,8 @@ fun ProfileScreen(navController: NavController? = null) {
                 }
             )
         }
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     }
 }
 
@@ -271,12 +316,15 @@ fun ProfileScreenContent(
         }
     }
 
+<<<<<<< HEAD
     // Format timestamp to readable date string
     fun formatJoinDate(timestamp: Long): String {
         val sdf = SimpleDateFormat("MMM, yyyy", Locale.ENGLISH)
         return "Joined since ${sdf.format(Date(timestamp))}"
     }
 
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(Color.White)
     ) {
@@ -285,7 +333,11 @@ fun ProfileScreenContent(
             onEditProfileClick = onProfilePicSelected,
             userName = userName,
             userEmail = user.email,
+<<<<<<< HEAD
             joinDate = formatJoinDate(user.registrationDate)
+=======
+            joinDate = "Joined since Feb, 2025" // Hardcoded for now
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
         )
         ProfileStatsSection()
         MyInvoicesSection()
@@ -358,12 +410,24 @@ fun BlueSemiCircleHeader(
 
 @Composable
 fun ProfileStatsSection() {
+<<<<<<< HEAD
+=======
+    val context = LocalContext.current
+    val sessionManager = remember { com.example.courtsite.data.session.SessionManager(context) }
+    val bookings = remember { sessionManager.getBookingCount() }
+    val hours = remember { sessionManager.getBookingHours() }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     Row(
         modifier = Modifier.fillMaxWidth().padding(16.dp).padding(top = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
+<<<<<<< HEAD
         StatItem(label = "bookings made", value = "0")
         StatItem(label = "booking hours", value = "0")
+=======
+        StatItem(label = "bookings made", value = bookings.toString())
+        StatItem(label = "booking hours", value = String.format("%.1f", hours))
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
         StatItem(label = "games joined", value = "0")
     }
 }
@@ -379,6 +443,12 @@ fun StatItem(label: String, value: String) {
 
 @Composable
 fun MyInvoicesSection() {
+<<<<<<< HEAD
+=======
+    val context = LocalContext.current
+    val sessionManager = remember { com.example.courtsite.data.session.SessionManager(context) }
+    val totalSpent = remember { sessionManager.getTotalSpent() }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
@@ -396,7 +466,11 @@ fun MyInvoicesSection() {
         ) {
             Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
+<<<<<<< HEAD
                     Text("RM0", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4E28CC))
+=======
+                    Text("RM" + String.format(java.util.Locale.ENGLISH, "%.2f", totalSpent), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4E28CC))
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                     Text("spent on sports this year", fontSize = 12.sp, color = Color.Gray)
                 }
                 Image(painterResource(id = R.drawable.invoice), "Invoice Icon", Modifier.size(48.dp)) // Corrected to R.drawable.invoice

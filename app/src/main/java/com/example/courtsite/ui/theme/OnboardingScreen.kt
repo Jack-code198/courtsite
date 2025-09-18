@@ -73,7 +73,12 @@ fun OnboardingScreen(
                 fontSize = 53.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Start,
+<<<<<<< HEAD
                 lineHeight = 60.sp,
+=======
+                lineHeight = 28.sp,
+
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             )
         }
 

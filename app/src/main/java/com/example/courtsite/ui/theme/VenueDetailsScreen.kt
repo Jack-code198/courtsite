@@ -525,6 +525,7 @@ fun VenueDetailsScreen(navController: NavController? = null, venueName: String) 
 					.padding(horizontal = 16.dp, vertical = 20.dp),
 				horizontalArrangement = Arrangement.spacedBy(12.dp)
 			) {
+<<<<<<< HEAD
 				OutlinedButton(
 					onClick = {
 						val loc = currentVenue?.location ?: ""
@@ -532,6 +533,16 @@ fun VenueDetailsScreen(navController: NavController? = null, venueName: String) 
 						val encodedLoc = URLEncoder.encode(loc, "UTF-8")
 						val encodedSport = URLEncoder.encode(sport, "UTF-8")
 						navController?.navigate("bookingResults/$encodedLoc/$encodedSport")
+=======
+				// Replace the current OutlinedButton (Availability button)
+				OutlinedButton(
+					onClick = {
+						val venueName = currentVenue?.name ?: ""
+						val sport = currentVenue?.sportType?.split(",")?.firstOrNull()?.trim() ?: ""
+						val encodedName = URLEncoder.encode(venueName, "UTF-8")
+						val encodedSport = URLEncoder.encode(sport, "UTF-8")
+						navController?.navigate("availability/$encodedName/$encodedSport")
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 					},
 					modifier = Modifier.weight(1f),
 					colors = ButtonDefaults.outlinedButtonColors(
@@ -545,7 +556,11 @@ fun VenueDetailsScreen(navController: NavController? = null, venueName: String) 
 						horizontalArrangement = Arrangement.Center
 					) {
 						Image(
+<<<<<<< HEAD
 							painter = painterResource(id = R.drawable.upcomingon), // Make sure you have upcoming.png in drawable
+=======
+							painter = painterResource(id = R.drawable.upcomingon),
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 							contentDescription = "Availability",
 							modifier = Modifier
 								.size(30.dp)
@@ -554,6 +569,7 @@ fun VenueDetailsScreen(navController: NavController? = null, venueName: String) 
 						Text("Availability")
 					}
 				}
+<<<<<<< HEAD
 				Button(
 					onClick = {
 						val loc = currentVenue?.location ?: ""
@@ -561,13 +577,34 @@ fun VenueDetailsScreen(navController: NavController? = null, venueName: String) 
 						val encodedLoc = URLEncoder.encode(loc, "UTF-8")
 						val encodedSport = URLEncoder.encode(sport, "UTF-8")
 						navController?.navigate("bookingResults/$encodedLoc/$encodedSport")
+=======
+
+// Replace the current Button (Book Now button)
+				Button(
+					onClick = {
+						val venueName = currentVenue?.name ?: ""
+						val sport = currentVenue?.sportType?.split(",")?.firstOrNull()?.trim() ?: ""
+						val encodedName = URLEncoder.encode(venueName, "UTF-8")
+						val encodedSport = URLEncoder.encode(sport, "UTF-8")
+						navController?.navigate("booknow/$encodedName/$encodedSport")
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 					},
 					modifier = Modifier.weight(1f),
 					colors = ButtonDefaults.buttonColors(
 						containerColor = Color(0xFF4E28CC),
 						contentColor = Color.White
 					)
+<<<<<<< HEAD
 				) {
+=======
+				) {Image(
+					painter = painterResource(id = R.drawable.booknow),
+					contentDescription = "Book Now",
+					modifier = Modifier
+						.size(30.dp)
+						.padding(end = 8.dp)
+				)
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 					Text("Book Now")
 				}
 			}

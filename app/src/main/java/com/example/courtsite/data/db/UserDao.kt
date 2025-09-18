@@ -48,6 +48,7 @@ interface UserDao {
     """)
     suspend fun updateContact(identifier: String, newName: String?, newEmail: String?, newPhone: String?)
 
+<<<<<<< HEAD
     // Update password for a specific user
     @Query("""
         UPDATE users
@@ -56,6 +57,8 @@ interface UserDao {
     """)
     suspend fun updatePassword(identifier: String, newPassword: String)
 
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     // Optional: Fetch all users (useful for admin/debug purposes)
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<User>

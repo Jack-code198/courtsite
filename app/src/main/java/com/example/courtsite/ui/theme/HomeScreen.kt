@@ -43,6 +43,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+<<<<<<< HEAD
+=======
+import com.example.tournaments.TournamentsScreen
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 
 
 val COURTSITE_LOGO = R.drawable.courtsitewhite
@@ -91,6 +95,29 @@ fun MainTabs(outerNavController: NavController? = null) {
             composable("home") {
                 HomeScreenContent(navController = tabsNavController)
             }
+<<<<<<< HEAD
+=======
+            // availability route is per-venue now
+            composable("availability/{venueName}/{sportType}") { backStackEntry ->
+                val venueName = backStackEntry.arguments?.getString("venueName") ?: ""
+                val sportType = backStackEntry.arguments?.getString("sportType") ?: ""
+                AvailabilityScreen(navController = tabsNavController, venueName = venueName, sportType = sportType)
+            }
+            composable("booknow/{venueName}/{sportType}") { backStackEntry ->
+                val venueName = backStackEntry.arguments?.getString("venueName") ?: ""
+                val sportType = backStackEntry.arguments?.getString("sportType") ?: ""
+                BookNowScreen(navController = tabsNavController, venueName = venueName, sportType = sportType)
+            }
+            composable("cart") {
+                CartScreen(navController = tabsNavController)
+            }
+            composable("payment-method") {
+                PaymentMethodScreen(navController = tabsNavController)
+            }
+            composable("payment") {
+                PaymentScreen(navController = tabsNavController)
+            }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             composable("explore") {
                 ExploreScreen(navController = tabsNavController) // This should work now
             }
@@ -116,10 +143,13 @@ fun MainTabs(outerNavController: NavController? = null) {
             composable("settings") {
                 SettingScreen(navController = tabsNavController)
             }
+<<<<<<< HEAD
             // Create Password route within tabs
             composable("createPassword") {
                 CreatePasswordScreen(navController = tabsNavController)
             }
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             // ADD THE BOOKING RESULTS ROUTE HERE
             composable("bookingResults/{location}/{sport}") { backStackEntry ->
                 val location = backStackEntry.arguments?.getString("location") ?: ""
@@ -135,6 +165,7 @@ fun MainTabs(outerNavController: NavController? = null) {
                 val venueName = backStackEntry.arguments?.getString("venueName") ?: ""
                 VenueDetailsScreen(navController = tabsNavController, venueName = venueName)
             }
+<<<<<<< HEAD
             // Facility Management route
             composable("facilityManagement") {
                 // Placeholder for facility management screen
@@ -183,6 +214,13 @@ fun MainTabs(outerNavController: NavController? = null) {
                 outerNavController?.navigate("logout") {
                     popUpTo(0) { inclusive = true }
                 }
+=======
+            composable("tournaments") {
+                TournamentsScreen(navController = tabsNavController)
+            }
+            composable("tournamentDetail"){
+                TournamentDetailsScreen(navController = tabsNavController)
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             }
         }
     }
@@ -332,7 +370,11 @@ fun HeaderSection(navController: NavController? = null) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
+<<<<<<< HEAD
         // Four square buttons
+=======
+        // Four square buttons (remove direct Availability entry)
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
@@ -353,7 +395,23 @@ fun HeaderSection(navController: NavController? = null) {
                 }
             )
             SquareButton(R.drawable.join, "Join")
+<<<<<<< HEAD
             SquareButton(R.drawable.tournaments, "Tournament")
+=======
+            SquareButton(
+                R.drawable.tournaments,
+                "Tournament",
+                onClick = {
+                    navController?.navigate("tournaments") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             SquareButton(R.drawable.deals, "Deals")
         }
     }

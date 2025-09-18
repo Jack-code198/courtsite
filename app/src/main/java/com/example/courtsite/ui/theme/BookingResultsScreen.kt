@@ -430,8 +430,17 @@ fun BookingResultsScreen(
                                 navController?.navigate("venueDetails/$encodedName")
                             },
                             onBookNow = {
+<<<<<<< HEAD
                                 val encodedName = URLEncoder.encode(venue.name, "UTF-8")
                                 navController?.navigate("venueDetails/$encodedName")
+=======
+                                // Set current venue and sport in BookingData so downstream screens use the same context
+                                BookingData.setCurrentVenueByName(venue.name)
+                                BookingData.setCurrentSport(venue.sportType.split(",").firstOrNull()?.trim())
+                                val encodedName = URLEncoder.encode(venue.name, "UTF-8")
+                                val sport = URLEncoder.encode(venue.sportType.split(",").firstOrNull()?.trim() ?: "", "UTF-8")
+                                navController?.navigate("booknow/$encodedName/$sport")
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                             }
                         )
                     }
@@ -793,7 +802,17 @@ fun EnhancedVenueCard(
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp)
+<<<<<<< HEAD
                 ) {
+=======
+                ) {Image(
+                    painter = painterResource(id = R.drawable.booknow),
+                    contentDescription = "Book Now",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(end = 8.dp)
+                )
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                     Text("Book Now", color = Color.White)
                 }
             }

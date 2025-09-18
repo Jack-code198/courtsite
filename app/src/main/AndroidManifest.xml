@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.INTERNET" />
 
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,9 +20,13 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+<<<<<<< HEAD
             android:theme="@style/Theme.Courtsite"
             android:screenOrientation="unspecified"
             android:configChanges="orientation|screenSize|keyboardHidden">
+=======
+            android:theme="@style/Theme.Courtsite">
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

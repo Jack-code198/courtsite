@@ -19,7 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+<<<<<<< HEAD
 import com.google.firebase.auth.FirebaseAuth
+=======
+import com.example.courtsite.data.session.SessionManager
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -86,8 +90,14 @@ fun BottomNavigationBar(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(navController: NavController) {
+<<<<<<< HEAD
     val context = LocalContext.current
     var showLogoutConfirm by remember { mutableStateOf(false) }
+=======
+    var selectedLanguage by remember { mutableStateOf("EN") }
+    val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 
     Scaffold(
         topBar = {
@@ -138,7 +148,29 @@ fun SettingScreen(navController: NavController) {
                 modifier = Modifier.clickable { navController.navigate("editProfile") }
             )
 
+<<<<<<< HEAD
             // Removed Link Social Accounts option
+=======
+            // Link Social Accounts
+            ListItem(
+                headlineContent = { Text("Link Social Accounts") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Link,
+                        contentDescription = null,
+                        tint = Color(0xFF4E28CC)
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                },
+                modifier = Modifier.clickable { }
+            )
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 
             // Create Password
             ListItem(
@@ -157,6 +189,7 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
+<<<<<<< HEAD
                 modifier = Modifier.clickable { navController.navigate("createPassword") }
             )
 
@@ -165,6 +198,30 @@ fun SettingScreen(navController: NavController) {
             // Join More Games option removed
 
             // Removed Payment & Billing option
+=======
+                modifier = Modifier.clickable { }
+            )
+
+            // Join More Games
+            ListItem(
+                headlineContent = { Text("Join More Games") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Games,
+                        contentDescription = null,
+                        tint = Color(0xFF4E28CC)
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                },
+                modifier = Modifier.clickable { }
+            )
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 
             Divider()
 
@@ -193,12 +250,16 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
+<<<<<<< HEAD
                 modifier = Modifier.clickable { 
                     // Open Facebook page
                     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
                     intent.data = android.net.Uri.parse("https://www.facebook.com/courtsite")
                     context.startActivity(intent)
                 }
+=======
+                modifier = Modifier.clickable { }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             )
 
             // Instagram
@@ -218,12 +279,16 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
+<<<<<<< HEAD
                 modifier = Modifier.clickable { 
                     // Open Instagram page
                     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
                     intent.data = android.net.Uri.parse("https://www.instagram.com/courtsite")
                     context.startActivity(intent)
                 }
+=======
+                modifier = Modifier.clickable { }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             )
 
             // TikTok
@@ -243,17 +308,75 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
+<<<<<<< HEAD
                 modifier = Modifier.clickable { 
                     // Open TikTok page
                     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
                     intent.data = android.net.Uri.parse("https://www.tiktok.com/@courtsite")
                     context.startActivity(intent)
                 }
+=======
+                modifier = Modifier.clickable { }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             )
 
             Divider()
 
+<<<<<<< HEAD
             // FEEDBACK section
+=======
+            // FOR BUSINESS section
+            Text(
+                "FOR BUSINESS",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            // Facility Management
+            ListItem(
+                headlineContent = { Text("Facility Management") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Business,
+                        contentDescription = null,
+                        tint = Color(0xFF4E28CC)
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                },
+                modifier = Modifier.clickable { }
+            )
+
+            // Schedule a Demo
+            ListItem(
+                headlineContent = { Text("Schedule a Demo") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Schedule,
+                        contentDescription = null,
+                        tint = Color(0xFF4E28CC)
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                },
+                modifier = Modifier.clickable { }
+            )
+
+            Divider()
+
+            // SUPPORT section
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             Text(
                 "SUPPORT",
                 fontSize = 14.sp,
@@ -261,6 +384,7 @@ fun SettingScreen(navController: NavController) {
                 modifier = Modifier.padding(16.dp)
             )
 
+<<<<<<< HEAD
             // User Feedback
             ListItem(
                 headlineContent = { Text("User Feedback") },
@@ -268,12 +392,22 @@ fun SettingScreen(navController: NavController) {
                     Icon(
                         imageVector = Icons.Default.Feedback,
                         contentDescription = "User Feedback",
+=======
+            // Help Centre
+            ListItem(
+                headlineContent = { Text("Help Centre") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Help,
+                        contentDescription = null,
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                         tint = Color(0xFF4E28CC)
                     )
                 },
                 trailingContent = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+<<<<<<< HEAD
                         contentDescription = "Navigate to feedback",
                         tint = Color.Gray
                     )
@@ -290,18 +424,82 @@ fun SettingScreen(navController: NavController) {
                     Icon(
                         imageVector = Icons.Default.AdminPanelSettings,
                         contentDescription = "Manage Feedback",
+=======
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                },
+                modifier = Modifier.clickable { }
+            )
+
+            // WhatsApp Us
+            ListItem(
+                headlineContent = { Text("WhatsApp Us") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Chat,
+                        contentDescription = null,
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                         tint = Color(0xFF4E28CC)
                     )
                 },
                 trailingContent = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+<<<<<<< HEAD
                         contentDescription = "Navigate to feedback management",
                         tint = Color.Gray
                     )
                 },
                 modifier = Modifier.clickable {
                     navController.navigate("feedbackManagement")
+=======
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                },
+                modifier = Modifier.clickable { }
+            )
+
+            Divider()
+
+            // Language section
+            Text(
+                "LANGUAGE",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            // Language selector
+            ListItem(
+                headlineContent = { Text("Language") },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Language,
+                        contentDescription = null,
+                        tint = Color(0xFF4E28CC)
+                    )
+                },
+                trailingContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        listOf("EN", "BM", "中文").forEach { lang ->
+                            TextButton(
+                                onClick = { selectedLanguage = lang },
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = if (selectedLanguage == lang) Color(0xFF4E28CC) else Color.LightGray,
+                                    contentColor = if (selectedLanguage == lang) Color.White else Color.Black
+                                ),
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Text(lang)
+                            }
+                        }
+                    }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                 }
             )
 
@@ -324,6 +522,7 @@ fun SettingScreen(navController: NavController) {
                     )
                 },
                 modifier = Modifier.clickable {
+<<<<<<< HEAD
                     showLogoutConfirm = true
                 }
             )
@@ -349,6 +548,15 @@ fun SettingScreen(navController: NavController) {
                 )
             }
 
+=======
+                    sessionManager.clearSession()
+                    navController.navigate("onboarding") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             // Add some padding at the bottom
             Spacer(modifier = Modifier.height(32.dp))
         }

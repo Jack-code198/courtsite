@@ -7,8 +7,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+<<<<<<< HEAD
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,10 +29,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.courtsite.R
+<<<<<<< HEAD
 import com.example.courtsite.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+=======
+import com.example.courtsite.data.db.DatabaseProvider
+import com.example.courtsite.data.model.User
+import com.example.courtsite.data.session.SessionManager
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,7 +47,11 @@ import kotlinx.coroutines.withContext
 @Composable
 fun EditProfileScreen(navController: NavController) {
     val context = LocalContext.current
+<<<<<<< HEAD
     val currentUser = FirebaseAuth.getInstance().currentUser
+=======
+    val session = remember { SessionManager(context) }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
     val scope = rememberCoroutineScope()
 
     var user by remember { mutableStateOf<User?>(null) }
@@ -47,6 +60,7 @@ fun EditProfileScreen(navController: NavController) {
     var phone by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
     var phoneError by remember { mutableStateOf<String?>(null) }
+<<<<<<< HEAD
     var nameError by remember { mutableStateOf<String?>(null) }
     var profilePic by remember { mutableStateOf<String?>(null) }
 
@@ -81,12 +95,29 @@ fun EditProfileScreen(navController: NavController) {
             phone = currentUser.phoneNumber ?: ""
             profilePic = currentUser.photoUrl?.toString()
             name = currentUser.displayName ?: email.substringBefore('@')
+=======
+    var profilePic by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        val identifier = session.getLoggedInUser()
+        if (!identifier.isNullOrBlank()) {
+            user = withContext(Dispatchers.IO) {
+                DatabaseProvider.getDatabase(context).userDao().findUserByIdentifier(identifier)
+            }
+            user?.let {
+                email = it.email ?: ""
+                phone = it.phone ?: ""
+                profilePic = it.profilePicture
+                name = (it.email ?: it.phone ?: "User").substringBefore('@')
+            }
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
         }
     }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
+<<<<<<< HEAD
         uri?.let { selectedUri ->
             profilePic = selectedUri.toString()
             scope.launch {
@@ -101,6 +132,14 @@ fun EditProfileScreen(navController: NavController) {
                         }
                     } catch (e: Exception) {
                         // Handle error if needed
+=======
+        uri?.let {
+            profilePic = it.toString()
+            scope.launch {
+                session.getLoggedInUser()?.let { id ->
+                    withContext(Dispatchers.IO) {
+                        DatabaseProvider.getDatabase(context).userDao().updateProfilePicture(id, it.toString())
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                     }
                 }
             }
@@ -120,7 +159,11 @@ fun EditProfileScreen(navController: NavController) {
             )
         }
     ) { padding ->
+<<<<<<< HEAD
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
+=======
+        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
             Text("AVATAR", fontSize = 12.sp, color = Color(0xFF888888), fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -145,8 +188,11 @@ fun EditProfileScreen(navController: NavController) {
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Name") },
+<<<<<<< HEAD
                 isError = nameError != null,
                 supportingText = { if (nameError != null) Text(nameError!!, color = Color.Red, fontSize = 12.sp) },
+=======
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -173,6 +219,7 @@ fun EditProfileScreen(navController: NavController) {
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = {
+<<<<<<< HEAD
                     // Validate fields
                     var hasError = false
                     
@@ -211,6 +258,18 @@ fun EditProfileScreen(navController: NavController) {
                                 }
                             } catch (e: Exception) {
                                 // Handle error if needed
+=======
+                    // Validate Malaysian phone number format
+                    // Valid formats: +60123456789, 60123456789, or 0123456789
+                    phoneError = if (phone.isNotBlank() && !Regex("^(?:\\+?60|0)[1-9]\\d{8,9}$").matches(phone)) "Please enter a valid Malaysian phone number" else null
+                    if (phoneError != null) return@Button
+
+                    // Save changes to database
+                    scope.launch {
+                        session.getLoggedInUser()?.let { id ->
+                            withContext(Dispatchers.IO) {
+                                DatabaseProvider.getDatabase(context).userDao().updateContact(id, if (name.isBlank()) null else name, email, if (phone.isBlank()) null else phone)
+>>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
                             }
                         }
                     }
