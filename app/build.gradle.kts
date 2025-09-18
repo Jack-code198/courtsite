@@ -3,11 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
-<<<<<<< HEAD
     id("com.google.gms.google-services")
 
-=======
->>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
+
     // Use KAPT for Room annotation processing
     id("kotlin-kapt")
 }
@@ -51,15 +49,12 @@ android {
 }
 
 dependencies {
-<<<<<<< HEAD
     // Firebase dependencies with specific versions
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.1")
     implementation("com.google.firebase:firebase-analytics:21.5.0")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
-
-=======
->>>>>>> 88db1f2a0092c7120b833fb021438c1510210e02
+    
     // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
