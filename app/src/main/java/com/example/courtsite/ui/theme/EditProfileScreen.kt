@@ -7,6 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -45,6 +47,7 @@ fun EditProfileScreen(navController: NavController) {
     var phone by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
     var phoneError by remember { mutableStateOf<String?>(null) }
+    var nameError by remember { mutableStateOf<String?>(null) }
     var profilePic by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
@@ -117,7 +120,7 @@ fun EditProfileScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
             Text("AVATAR", fontSize = 12.sp, color = Color(0xFF888888), fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -142,6 +145,8 @@ fun EditProfileScreen(navController: NavController) {
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Name") },
+                isError = nameError != null,
+                supportingText = { if (nameError != null) Text(nameError!!, color = Color.Red, fontSize = 12.sp) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -168,10 +173,25 @@ fun EditProfileScreen(navController: NavController) {
             Spacer(Modifier.height(24.dp))
             Button(
                 onClick = {
-                    // Validate Malaysian phone number format
-                    // Valid formats: +60123456789, 60123456789, or 0123456789
-                    phoneError = if (phone.isNotBlank() && !Regex("^(?:\\+?60|0)[1-9]\\d{8,9}$").matches(phone)) "Please enter a valid Malaysian phone number" else null
-                    if (phoneError != null) return@Button
+                    // Validate fields
+                    var hasError = false
+                    
+                    // Validate name is not empty
+                    nameError = if (name.isBlank()) "Name cannot be empty" else null
+                    if (nameError != null) hasError = true
+                    
+                    // Validate phone number is not empty
+                    if (phone.isBlank()) {
+                        phoneError = "Phone number cannot be empty"
+                        hasError = true
+                    } else {
+                        // Validate Malaysian phone number format
+                        // Valid formats: +60123456789, 60123456789, or 0123456789
+                        phoneError = if (!Regex("^(?:\\+?60|0)[1-9]\\d{8,9}$").matches(phone)) "Please enter a valid Malaysian phone number" else null
+                        if (phoneError != null) hasError = true
+                    }
+                    
+                    if (hasError) return@Button
 
                     // Save changes to Firestore
                     scope.launch {

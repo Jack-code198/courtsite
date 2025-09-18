@@ -86,7 +86,6 @@ fun BottomNavigationBar(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(navController: NavController) {
-    var selectedLanguage by remember { mutableStateOf("EN") }
     val context = LocalContext.current
     var showLogoutConfirm by remember { mutableStateOf(false) }
 
@@ -139,25 +138,7 @@ fun SettingScreen(navController: NavController) {
                 modifier = Modifier.clickable { navController.navigate("editProfile") }
             )
 
-            // Link Social Accounts
-            ListItem(
-                headlineContent = { Text("Link Social Accounts") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Link,
-                        contentDescription = null,
-                        tint = Color(0xFF4E28CC)
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                },
-                modifier = Modifier.clickable { }
-            )
+            // Removed Link Social Accounts option
 
             // Create Password
             ListItem(
@@ -179,25 +160,11 @@ fun SettingScreen(navController: NavController) {
                 modifier = Modifier.clickable { navController.navigate("createPassword") }
             )
 
-            // Join More Games
-            ListItem(
-                headlineContent = { Text("Join More Games") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Games,
-                        contentDescription = null,
-                        tint = Color(0xFF4E28CC)
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                },
-                modifier = Modifier.clickable { }
-            )
+            // Removed Notification Settings and Privacy & Security options
+
+            // Join More Games option removed
+
+            // Removed Payment & Billing option
 
             Divider()
 
@@ -226,7 +193,12 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable { 
+                    // Open Facebook page
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                    intent.data = android.net.Uri.parse("https://www.facebook.com/courtsite")
+                    context.startActivity(intent)
+                }
             )
 
             // Instagram
@@ -246,7 +218,12 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable { 
+                    // Open Instagram page
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                    intent.data = android.net.Uri.parse("https://www.instagram.com/courtsite")
+                    context.startActivity(intent)
+                }
             )
 
             // TikTok
@@ -266,62 +243,17 @@ fun SettingScreen(navController: NavController) {
                         tint = Color.Gray
                     )
                 },
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable { 
+                    // Open TikTok page
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                    intent.data = android.net.Uri.parse("https://www.tiktok.com/@courtsite")
+                    context.startActivity(intent)
+                }
             )
 
             Divider()
 
-            // FOR BUSINESS section
-            Text(
-                "FOR BUSINESS",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(16.dp)
-            )
-
-            // Facility Management
-            ListItem(
-                headlineContent = { Text("Facility Management") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Business,
-                        contentDescription = null,
-                        tint = Color(0xFF4E28CC)
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                },
-                modifier = Modifier.clickable { }
-            )
-
-            // Schedule a Demo
-            ListItem(
-                headlineContent = { Text("Schedule a Demo") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Schedule,
-                        contentDescription = null,
-                        tint = Color(0xFF4E28CC)
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                },
-                modifier = Modifier.clickable { }
-            )
-
-            Divider()
-
-            // SUPPORT section
+            // FEEDBACK section
             Text(
                 "SUPPORT",
                 fontSize = 14.sp,
@@ -329,84 +261,47 @@ fun SettingScreen(navController: NavController) {
                 modifier = Modifier.padding(16.dp)
             )
 
-            // Help Centre
+            // User Feedback
             ListItem(
-                headlineContent = { Text("Help Centre") },
+                headlineContent = { Text("User Feedback") },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.Help,
-                        contentDescription = null,
+                        imageVector = Icons.Default.Feedback,
+                        contentDescription = "User Feedback",
                         tint = Color(0xFF4E28CC)
                     )
                 },
                 trailingContent = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
+                        contentDescription = "Navigate to feedback",
                         tint = Color.Gray
                     )
                 },
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable {
+                    navController.navigate("feedback")
+                }
             )
-
-            // WhatsApp Us
+            
+            // Admin Feedback Management
             ListItem(
-                headlineContent = { Text("WhatsApp Us") },
+                headlineContent = { Text("Manage Feedback") },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.Chat,
-                        contentDescription = null,
+                        imageVector = Icons.Default.AdminPanelSettings,
+                        contentDescription = "Manage Feedback",
                         tint = Color(0xFF4E28CC)
                     )
                 },
                 trailingContent = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
+                        contentDescription = "Navigate to feedback management",
                         tint = Color.Gray
                     )
                 },
-                modifier = Modifier.clickable { }
-            )
-
-            Divider()
-
-            // Language section
-            Text(
-                "LANGUAGE",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(16.dp)
-            )
-
-            // Language selector
-            ListItem(
-                headlineContent = { Text("Language") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = null,
-                        tint = Color(0xFF4E28CC)
-                    )
-                },
-                trailingContent = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        listOf("EN", "BM", "中文").forEach { lang ->
-                            TextButton(
-                                onClick = { selectedLanguage = lang },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = if (selectedLanguage == lang) Color(0xFF4E28CC) else Color.LightGray,
-                                    contentColor = if (selectedLanguage == lang) Color.White else Color.Black
-                                ),
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Text(lang)
-                            }
-                        }
-                    }
+                modifier = Modifier.clickable {
+                    navController.navigate("feedbackManagement")
                 }
             )
 

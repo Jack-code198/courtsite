@@ -2,6 +2,8 @@ package com.example.courtsite.ui.theme
 
 import android.net.Uri
 import android.os.Bundle
+import java.text.SimpleDateFormat
+import java.util.*
 // import android.util.Log // Marked as unused
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -269,6 +271,12 @@ fun ProfileScreenContent(
         }
     }
 
+    // Format timestamp to readable date string
+    fun formatJoinDate(timestamp: Long): String {
+        val sdf = SimpleDateFormat("MMM, yyyy", Locale.ENGLISH)
+        return "Joined since ${sdf.format(Date(timestamp))}"
+    }
+
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(Color.White)
     ) {
@@ -277,7 +285,7 @@ fun ProfileScreenContent(
             onEditProfileClick = onProfilePicSelected,
             userName = userName,
             userEmail = user.email,
-            joinDate = "Joined since Feb, 2025" // Hardcoded for now
+            joinDate = formatJoinDate(user.registrationDate)
         )
         ProfileStatsSection()
         MyInvoicesSection()

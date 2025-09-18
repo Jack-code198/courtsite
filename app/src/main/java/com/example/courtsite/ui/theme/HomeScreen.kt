@@ -135,6 +135,49 @@ fun MainTabs(outerNavController: NavController? = null) {
                 val venueName = backStackEntry.arguments?.getString("venueName") ?: ""
                 VenueDetailsScreen(navController = tabsNavController, venueName = venueName)
             }
+            // Facility Management route
+            composable("facilityManagement") {
+                // Placeholder for facility management screen
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Facility Management - Coming Soon")
+                }
+            }
+            
+            // Help Centre route
+            composable("helpCentre") {
+                // Placeholder for help centre screen
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Help Centre - Coming Soon")
+                }
+            }
+            
+            // Contact Form route
+            composable("contactForm") {
+                // Placeholder for contact form screen
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Contact Form - Coming Soon")
+                }
+            }
+            
+            // Feedback route
+            composable("feedback") {
+                FeedbackScreen(navController = tabsNavController)
+            }
+            
+            // Feedback management route
+            composable("feedbackManagement") {
+                FeedbackManagementScreen(navController = tabsNavController)
+            }
+            
             // Delegate logout route inside tabs to root nav controller
             composable("logout") {
                 outerNavController?.navigate("logout") {

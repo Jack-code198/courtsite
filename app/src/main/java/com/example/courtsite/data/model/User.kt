@@ -15,5 +15,8 @@ data class User(
     val password: String,
 
     @ColumnInfo(name = "profile_picture")
-    val profilePicture: String? = null
+    val profilePicture: String? = null,
+
+    @ColumnInfo(name = "registration_date")
+    val registrationDate: Long = System.currentTimeMillis()
 )
